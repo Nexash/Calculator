@@ -40,20 +40,21 @@ class CalculatorController {
       case "-":
         if (_input.isEmpty) {
           if (_isResultShown) {
-            // If result is shown, start a new subtraction operation
-            oper = button; // set "-" as operator
+            // Start new operation from result
+            _handleOperator(button);
             _isResultShown = false;
-            _input = "";
+            return;
           } else if (oper.isNotEmpty) {
-            // If there’s already an operator, treat "-" as negative sign
+            // Already an operator, user wants negative number
             _input = "-";
             return;
           } else {
-            // Nothing entered yet, user wants negative number
+            // Nothing typed yet, user wants negative number
             _input = "-";
             return;
           }
         } else {
+          // Regular subtraction operator
           _handleOperator(button);
         }
         break;

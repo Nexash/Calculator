@@ -195,7 +195,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 SizedBox(
                   width:
                       MediaQuery.of(context).size.width / 2 -
-                      15, // double width
+                      18, // double width
                   height: 89,
                   child: CustomClickableContainer(
                     child: Row(
@@ -248,6 +248,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                         }),
                   ),
                 ),
+                SizedBox(width: 5),
               ],
             ),
             SizedBox(height: 50),
