@@ -41,37 +41,62 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   };
   final List<String> calculatorElementslast = ["0", ".", "="];
 
+  double _getDisplayFontSize(String text) {
+    final int length = text.length;
+
+    if (length <= 16) return 60;
+    if (length <= 50) return 45;
+    if (length <= 50) return 35;
+    if (length <= 60) return 34;
+    if (length <= 70) return 28;
+    return 22;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      controller.isResultShow ? controller.expression : "",
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: const Color.fromARGB(255, 176, 169, 169),
+          Expanded(
+            child: SingleChildScrollView(
+              reverse: true, // 👈 important: scroll up like calculator
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        controller.isResultShow ? controller.expression : "",
+                        style: const TextStyle(
+                          fontSize: 30,
+                          color: Color.fromARGB(255, 176, 169, 169),
+                        ),
+                        textAlign: TextAlign.right,
                       ),
-                    ),
-                    Text(
-                      controller.fullExpression,
-                      style: TextStyle(fontSize: 60, color: Colors.white),
-                    ),
-                  ],
+                      Text(
+                        controller.fullExpression,
+                        style: TextStyle(
+                          fontSize: _getDisplayFontSize(
+                            controller.fullExpression,
+                          ),
+                          color: Colors.white,
+                        ),
+
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
+            ),
           ),
+
           SizedBox(height: 20),
           GridView.count(
             crossAxisCount: 4,

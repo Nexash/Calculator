@@ -104,7 +104,13 @@ class CalculatorController {
     String text = value.toStringAsFixed(4);
 
     // Remove trailing zeros
-    text = text.replaceAll(RegExp(r'\.?0+$'), '');
+    if (text.contains('.')) text = text.replaceAll(RegExp(r'\.?0+$'), '');
+
+    // Use exponential if too long
+
+    if (text.length > 12) {
+      text = value.toStringAsExponential(6); // 6 decimals in exponent
+    }
 
     return text;
   }
@@ -128,11 +134,6 @@ class CalculatorController {
       }
     } else {
       double? secondNumberr = double.tryParse(_input);
-      // if (secondNumberr == null) {
-      //   _output = "Error";
-      //   _isResultShown = true;
-      //   return;
-      // }
 
       // 3️⃣ Division by zero check
       if (oper == "÷" && secondNumberr == 0) {
@@ -158,7 +159,7 @@ class CalculatorController {
       case "×":
         _output =
             (secondNumber == 0)
-                ? "Error"
+                ? "0"
                 : _format(_firstNumber * secondNumber).toString();
         break;
       case "÷":
