@@ -15,27 +15,26 @@ class CalculatorController {
 
   String get fullExpression {
     if (_output == "Error") return "Error";
-    String first = _format(_firstNumber);
-    if (_isResultShown) return first;
-    if (oper.isEmpty) {
-      return _input.isEmpty ? "" : _input;
-    }
-    _expression = "$first$oper$_input";
-    return _input.isEmpty ? "$first$oper" : "$first$oper$_input";
+
+    // If result is shown, return the final output
+    if (_isResultShown) return _output;
+
+    // Otherwise, just show what the user typed
+    return _expression + _input;
   }
 
   void press(String button) {
     switch (button) {
       case "C":
         _input = "";
-
+        _expression = "";
         _output = "";
         oper = "";
         _isResultShown = false;
         break;
 
       case "=":
-        _caluclate();
+        _calculate();
         _isResultShown = true;
         break;
       case "-":
@@ -77,26 +76,33 @@ class CalculatorController {
   }
 
   void _handleOperator(String operator) {
-    if (_input.isEmpty) {
-      // If user clicks operator right after result is shown
-      // we use previous output as first number
-      if (_isResultShown && _output.isNotEmpty) {
-        _firstNumber = double.parse(_output);
+    if (_input.isNotEmpty) {
+      // Append current number and operator to expression for UI
+      _expression += _input + operator;
+
+      // Calculate running total if previous operator exists
+      if (_firstNumber != 0 && oper.isNotEmpty) {
+        _calculate(fromEquals: false); // updates _firstNumber
       } else {
-        _firstNumber = 0;
+        _firstNumber = double.parse(_input); // store first number
       }
+
+      _input = ""; // ready for next input
+    } else if (_isResultShown && _output.isNotEmpty) {
+      // If result is shown, continue calculation from previous output
+      _expression = _output + operator;
+      _firstNumber = double.parse(_output);
+      _input = "";
     } else {
-      _firstNumber = double.parse(_input);
+      // User pressed operator with no input, just update operator
+      _expression += operator;
     }
 
     oper = operator;
-
-    _input = "";
-    // Result shown flag is false now
     _isResultShown = false;
 
-    // Optional: update output so UI shows "5-" for example
-    _output = _format(_firstNumber);
+    // Optional: you can comment this out if you don't want running total shown
+    // _output = _format(_firstNumber);
   }
 
   String _format(double value) {
@@ -115,68 +121,56 @@ class CalculatorController {
     return text;
   }
 
-  void _caluclate() {
+  void _calculate({bool fromEquals = true}) {
+    String result = "";
     if (oper.isEmpty) return;
-    double secondNumber;
 
     if (_input.isEmpty) {
       if (oper == "%") {
-        _output = _format(_firstNumber * 0.01); // 5% = 0.05
         _firstNumber = _firstNumber * 0.01;
-        _input = "";
-        _isResultShown = true;
+        _output = _format(_firstNumber);
+        if (fromEquals) _isResultShown = true;
         return;
       } else {
-        _output = _format(_firstNumber); // other operators
-        _input = "";
-        _isResultShown = true;
+        _output = _format(_firstNumber);
+        if (fromEquals) _isResultShown = true;
         return;
       }
-    } else {
-      double? secondNumberr = double.tryParse(_input);
+    }
 
-      // 3️⃣ Division by zero check
-      if (oper == "÷" && secondNumberr == 0) {
-        _output = "Error";
-        _isResultShown = true;
-        return;
-      } else {
-        secondNumber = double.parse(_input);
-      }
+    double secondNumber = double.parse(_input);
+
+    if (oper == "÷" && secondNumber == 0) {
+      _output = "Error";
+      _isResultShown = true;
+      return;
     }
 
     switch (oper) {
       case "+":
-        _output = _format(_firstNumber + secondNumber).toString();
+        _firstNumber += secondNumber;
         break;
-
       case "-":
-        _output = _format(_firstNumber - secondNumber).toString();
-        break;
-      case "%":
-        _output = _format(_firstNumber % secondNumber).toString();
+        _firstNumber -= secondNumber;
         break;
       case "×":
-        _output =
-            (secondNumber == 0)
-                ? "0"
-                : _format(_firstNumber * secondNumber).toString();
+        _firstNumber *= secondNumber;
         break;
       case "÷":
-        if (secondNumber == 0) {
-          _output = "Error";
-          _isResultShown = true;
-          return; // stop execution here
-        } else {
-          _output = _format(_firstNumber / secondNumber);
-        }
+        _firstNumber /= secondNumber;
+        break;
+      case "%":
+        _firstNumber %= secondNumber;
         break;
     }
-    if (_output != "Error") {
-      _firstNumber = double.parse(_output);
+
+    result = _format(_firstNumber);
+    if (fromEquals) {
+      _isResultShown = true;
+      _expression += _input;
+      _output = result;
     }
 
     _input = "";
-    _isResultShown = true;
   }
 }
