@@ -37,6 +37,23 @@ class CalculatorController {
         _calculate();
         _isResultShown = true;
         break;
+
+      case "⌫": // or whatever button label you use for backspace
+        if (_input.isNotEmpty) {
+          // Remove last character from the current input
+          _input = _input.substring(0, _input.length - 1);
+        } else if (_expression.isNotEmpty) {
+          // Remove last operator from the expression
+          _expression = _expression.substring(0, _expression.length - 1);
+
+          // Optionally, reset operator if last character removed was an operator
+          if (_expression.isEmpty) {
+            oper = "";
+            _firstNumber = 0;
+          }
+        }
+        break;
+
       case "-":
         if (_input.isEmpty) {
           if (_isResultShown) {

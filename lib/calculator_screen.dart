@@ -14,7 +14,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   final CalculatorController controller = CalculatorController();
   final List<String> calculatorElements = [
     "C",
-    "up",
+    "⌫",
     "%",
     "÷",
     "7",
@@ -37,7 +37,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     "-": Colors.orange,
     "+": Colors.orange,
     "=": Colors.orange,
-    "up": const Color.fromARGB(186, 225, 215, 215),
+    "⌫": const Color.fromARGB(186, 225, 215, 215),
     "%": const Color.fromARGB(186, 225, 215, 215),
   };
   final List<String> calculatorElementslast = ["0", ".", "="];
@@ -89,7 +89,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           break;
 
         case 'Backspace':
-          controller.press('up'); // delete button
+          controller.press('⌫'); // delete button
           break;
 
         case '%':
