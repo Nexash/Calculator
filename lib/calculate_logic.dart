@@ -38,7 +38,7 @@ class CalculatorController {
         _isResultShown = true;
         break;
 
-      case "⌫": // or whatever button label you use for backspace
+      case "Back": // or whatever button label you use for backspace
         if (_input.isNotEmpty) {
           // Remove last character from the current input
           _input = _input.substring(0, _input.length - 1);
@@ -89,38 +89,55 @@ class CalculatorController {
           _input = "";
           _isResultShown = false;
         }
+        if (button == "-" && _input == "-") {
+          return; // ignore the second "-"
+        }
         _input += button;
     }
   }
 
   void _handleOperator(String operator) {
     if (_input.isNotEmpty) {
-      // Append current number and operator to expression for UI
+      // Append current number and operator to expression
       _expression += _input + operator;
 
       // Calculate running total if previous operator exists
       if (_firstNumber != 0 && oper.isNotEmpty) {
-        _calculate(fromEquals: false); // updates _firstNumber
+        _calculate(fromEquals: false);
       } else {
-        _firstNumber = double.parse(_input); // store first number
+        _firstNumber = double.parse(_input);
       }
 
       _input = ""; // ready for next input
-    } else if (_isResultShown && _output.isNotEmpty) {
-      // If result is shown, continue calculation from previous output
-      _expression = _output + operator;
-      _firstNumber = double.parse(_output);
-      _input = "";
+    } else if (_expression.isNotEmpty) {
+      // Last character in expression
+      String lastChar = _expression[_expression.length - 1];
+
+      if ("+-×÷%".contains(lastChar)) {
+        if (operator == "-" && _input != "-") {
+          // Allow a single negative sign after an operator
+          _input = "-";
+        } else {
+          // Replace last operator with new operator
+          _expression =
+              _expression.substring(0, _expression.length - 1) + operator;
+        }
+      } else {
+        // Last char is a number, append operator normally
+        _expression += operator;
+      }
     } else {
-      // User pressed operator with no input, just update operator
-      _expression += operator;
+      // Expression empty
+      if (operator == "-") {
+        _input = "-"; // start with negative number
+      } else {
+        // ignore other operators at start
+        return;
+      }
     }
 
     oper = operator;
     _isResultShown = false;
-
-    // Optional: you can comment this out if you don't want running total shown
-    // _output = _format(_firstNumber);
   }
 
   String _format(double value) {
@@ -155,7 +172,6 @@ class CalculatorController {
         return;
       }
     }
-
     double secondNumber = double.parse(_input);
 
     if (oper == "÷" && secondNumber == 0) {

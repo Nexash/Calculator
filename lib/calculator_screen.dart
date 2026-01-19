@@ -14,7 +14,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   final CalculatorController controller = CalculatorController();
   final List<String> calculatorElements = [
     "C",
-    "⌫",
+    "Back",
     "%",
     "÷",
     "7",
@@ -37,7 +37,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     "-": Colors.orange,
     "+": Colors.orange,
     "=": Colors.orange,
-    "⌫": const Color.fromARGB(186, 225, 215, 215),
+    "Back": const Color.fromARGB(186, 225, 215, 215),
     "%": const Color.fromARGB(186, 225, 215, 215),
   };
   final List<String> calculatorElementslast = ["0", ".", "="];
@@ -89,7 +89,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           break;
 
         case 'Backspace':
-          controller.press('⌫'); // delete button
+          controller.press('Back'); // delete button
           break;
 
         case '%':
@@ -122,40 +122,37 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         backgroundColor: Colors.black,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
+          // crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                reverse: true, // 👈 important: scroll up like calculator
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          controller.isResultShow ? controller.expression : "",
-                          style: const TextStyle(
-                            fontSize: 30,
-                            color: Color.fromARGB(255, 176, 169, 169),
-                          ),
-                          textAlign: TextAlign.right,
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        controller.isResultShow ? controller.expression : "",
+                        style: const TextStyle(
+                          fontSize: 30,
+                          color: Color.fromARGB(255, 176, 169, 169),
                         ),
-                        Text(
-                          controller.fullExpression,
-                          style: TextStyle(
-                            fontSize: _getDisplayFontSize(
-                              controller.fullExpression,
-                            ),
-                            color: Colors.white,
+                        textAlign: TextAlign.right,
+                      ),
+                      Text(
+                        controller.fullExpression,
+                        style: TextStyle(
+                          fontSize: _getDisplayFontSize(
+                            controller.fullExpression,
                           ),
+                          color: Colors.white,
+                        ),
 
-                          textAlign: TextAlign.right,
-                        ),
-                      ],
-                    ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -175,7 +172,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     color: buttonColors[item],
                     child: Center(
                       child: Text(
-                        item,
+                        item == 'Back' ? '⌫' : item,
                         style: TextStyle(fontSize: 35, color: Colors.white),
                       ),
                     ),
@@ -186,70 +183,72 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   ),
               ],
             ),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 5,
 
-              children: [
-                // First button spans 2 columns
-                SizedBox(
-                  width:
-                      MediaQuery.of(context).size.width / 2 -
-                      18, // double width
-                  height: 89,
-                  child: CustomClickableContainer(
-                    child: Row(
-                      children: [
-                        SizedBox(width: 40),
-                        Text(
-                          "0",
+                children: [
+                  // First button spans 2 columns
+                  SizedBox(
+                    width:
+                        MediaQuery.of(context).size.width / 2.3, // double width
+                    height: 89,
+                    child: CustomClickableContainer(
+                      child: Row(
+                        children: [
+                          SizedBox(width: 40),
+                          Text(
+                            "0",
+                            style: TextStyle(fontSize: 35, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      ontap:
+                          () => setState(() {
+                            controller.press("0");
+                          }),
+                    ),
+                  ),
+
+                  // Next two buttons
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 4.5,
+                    height: 89,
+                    child: CustomClickableContainer(
+                      child: Center(
+                        child: Text(
+                          ".",
                           style: TextStyle(fontSize: 35, color: Colors.white),
                         ),
-                      ],
-                    ),
-                    ontap:
-                        () => setState(() {
-                          controller.press("0");
-                        }),
-                  ),
-                ),
-
-                // Next two buttons
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 4 - 15,
-                  height: 89,
-                  child: CustomClickableContainer(
-                    child: Center(
-                      child: Text(
-                        ".",
-                        style: TextStyle(fontSize: 35, color: Colors.white),
                       ),
+                      ontap:
+                          () => setState(() {
+                            controller.press(".");
+                          }),
                     ),
-                    ontap:
-                        () => setState(() {
-                          controller.press(".");
-                        }),
                   ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 4 - 15,
-                  height: 89,
-                  child: CustomClickableContainer(
-                    color: Colors.orange,
-                    child: Center(
-                      child: Text(
-                        "=",
-                        style: TextStyle(fontSize: 35, color: Colors.white),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 4.5,
+                    height: 89,
+                    child: CustomClickableContainer(
+                      color: Colors.orange,
+                      child: Center(
+                        child: Text(
+                          "=",
+                          style: TextStyle(fontSize: 35, color: Colors.white),
+                        ),
                       ),
+                      ontap:
+                          () => setState(() {
+                            controller.press("=");
+                          }),
                     ),
-                    ontap:
-                        () => setState(() {
-                          controller.press("=");
-                        }),
                   ),
-                ),
-                SizedBox(width: 5),
-              ],
+                  SizedBox(width: 5),
+                ],
+              ),
             ),
             SizedBox(height: 50),
           ],
